@@ -36,15 +36,6 @@ spec:
           ports:
             - containerPort: 3306
               name: mysql
-          readinessProbe:
-            exec:
-              command:
-                - "/bin/bash"
-                - "-c"
-                - "mysql -D $$MYSQL_DATABASE -p$$MYSQL_ROOT_PASSWORD -e 'SELECT 1'"
-            initialDelaySeconds: 5
-            periodSeconds: 2
-            timeoutSeconds: 1
           volumeMounts:
             - name: mysql-persistent-storage
               mountPath: /docker-entrypoint-initdb.d
