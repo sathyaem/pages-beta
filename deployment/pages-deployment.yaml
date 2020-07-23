@@ -17,7 +17,7 @@ spec:
         app: pages
     spec:
       containers:
-        - image: [docker-username]/pages:pipeline
+        - image: [docker-username]/pages:db
           name: pages
           ports:
             - containerPort: 8080

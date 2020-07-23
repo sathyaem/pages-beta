@@ -1,9 +1,7 @@
 name: Pages Pipeline
-
 on:
   push:
     branches: [master]
-
 jobs:
   build-artifact:
     runs-on: ubuntu-latest
@@ -13,6 +11,12 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 11
+      - name: Startup test database instance
+        run: sudo service mysql start
+      - name: Create test database
+        run: |
+          chmod +x ./scripts/build-setup.sh
+          bash ./scripts/build-setup.sh
       - name: Build with Gradle
         run: |
           chmod +x ./gradlew
@@ -22,14 +26,13 @@ jobs:
         with:
           name: artifact
           path: build/libs/pages.jar
-
       - name: build-docker-image
         uses: docker/build-push-action@v1
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
           repository: ${{ secrets.DOCKER_USERNAME }}/pages
-          tags: pipeline
+          tags: db
   deploy-image-to-pks:
     needs: build-artifact
     runs-on: ubuntu-latest
@@ -37,23 +40,14 @@ jobs:
       - uses: actions/checkout@v1
       - name: Install Pivnet & PKS
         run: |
-          sudo apt-get update
-          wget -O pivnet github.com/pivotal-cf/pivnet-cli/releases/download/v0.0.55/pivnet-linux-amd64-0.0.55 && chmod +x pivnet && sudo mv pivnet /usr/local/bin
-          pivnet login --api-token=${{ secrets.PIVNET_API_TOKEN }}
-          pivnet download-product-files --product-slug='pivotal-container-service' --release-version='1.7.0' --product-file-id=646536
-          sudo mv pks-linux-amd64-1.7.0-build.483 pks
-          chmod +x pks
-          sudo mv pks /usr/local/bin/
-      - name: Install Kubectl
-        run: |
-          pivnet download-product-files --product-slug='pivotal-container-service' --release-version='1.7.0' --product-file-id=633728
-          sudo mv  kubectl-linux-amd64-1.16.7 kubectl
-          sudo mv kubectl /usr/local/bin/
+          chmod +x ./scripts/kube-install.sh
+          bash ./scripts/kube-install.sh ${{ secrets.PIVNET_API_TOKEN }}
       - name: PKS Login
         run: |
           pks login -a ${{ secrets.PKS_API }}  ${{ secrets.PKS_CLUSTER }} -u ${{ secrets.PKS_USERNAME }} -k -p ${{ secrets.PKS_PASSWORD }}
-          pks get-credentials pks-workshop
-          kubectl apply -f deployment/pages-namespace.yaml
-          kubectl apply -f deployment/pages-config.yaml
-          kubectl apply -f deployment/pages-service.yaml
-          kubectl apply -f deployment/pages-deployment.yaml
+          pks get-credentials ${{ secrets.PKS_CLUSTER}}
+      - name: Create and Update K8s Objects
+        run: |
+          chmod +x ./scripts/deploy-objects-to-k8s.sh
+          bash ./scripts/deploy-objects-to-k8s.sh
+
