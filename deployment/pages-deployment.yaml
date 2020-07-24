@@ -17,7 +17,7 @@ spec:
         app: pages
     spec:
       containers:
-        - image: [docker-username]/pages:db
+        - image: [docker-username]/pages:service
           name: pages
           ports:
             - containerPort: 8080
