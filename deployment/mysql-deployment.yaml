@@ -5,16 +5,19 @@ metadata:
   namespace: [student-name]
   labels:
     app: pages
+    tier: database
 spec:
   selector:
     matchLabels:
       app: pages
+      tier: database
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
         app: pages
+        tier: database
     spec:
       containers:
         - image: mysql:8.0

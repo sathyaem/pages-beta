@@ -5,9 +5,11 @@ metadata:
   namespace: [student-name]
   labels:
     app: pages
+    tier: database
 spec:
   ports:
     - port: 3306
   selector:
     app: pages
+    tier: database
   type: NodePort
