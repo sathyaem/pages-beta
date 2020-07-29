@@ -7,7 +7,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
-import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
@@ -17,6 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class MySqlPageRepositoryTest {
     private IPageRepository repo;
     private JdbcTemplate jdbcTemplate;
+
     @Autowired
     private DataSource dataSource;
 

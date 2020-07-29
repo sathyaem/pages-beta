@@ -1,7 +1,6 @@
 package org.dell.kube.pagesapi;
 
 import com.jayway.jsonpath.DocumentContext;
-import org.dell.kube.pages.Page;
 import org.dell.kube.pages.PageApplication;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
