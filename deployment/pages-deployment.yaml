@@ -20,11 +20,18 @@ spec:
         tier: service
     spec:
       containers:
-        - image: [docker-username]/pages:monitor
+        - image: [docker-username]/pages:[tag]
           name: pages
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
+          resources:
+            requests:
+              memory: 500Mi
+              cpu: 0.25
+            limits:
+              memory: 900Mi
+              cpu: 1
           env:
             - name: PAGE_CONTENT
               valueFrom:
@@ -32,7 +39,7 @@ spec:
                   name: pages-config-map
                   key: PAGE_CONTENT
             - name: SPRING_DATASOURCE_URL
-              value: jdbc:mysql://pages-mysql/pages?useSSL=false
+              value: jdbc:mysql://pages-mysql/pages?allowPublicKeyRetrieval=true&useSSL=false
             - name: SPRING_DATASOURCE_USERNAME
               value: "root"
             - name: SPRING_DATASOURCE_PASSWORD

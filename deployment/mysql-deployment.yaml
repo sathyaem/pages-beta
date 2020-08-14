@@ -36,12 +36,20 @@ spec:
               value: "pages"
             - name: MYSQL_USER
               value: "root"
+          resources:
+            requests:
+              memory: 500Mi
+              cpu: 0.25
+            limits:
+              memory: 900Mi
+              cpu: 1
           ports:
             - containerPort: 3306
               name: mysql
           volumeMounts:
             - name: mysql-persistent-storage
-              mountPath: /-entrypoint-initdb.d
+              mountPath: /var/lib/mysql
       volumes:
         - name: mysql-persistent-storage
-          emptyDir: {}
+          persistentVolumeClaim:
+            claimName: mysql-pvc
